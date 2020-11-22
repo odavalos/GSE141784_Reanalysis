@@ -141,22 +141,22 @@ table(experiment.aggregate@meta.data$cell.cycle) %>% kable(caption = "Number of 
 
 # Plot the number of cells each gene is represented by
 
-png("plots/gene_representaion.png", units="in", width=8, height=8, res=300)
+png("plots/gene_representation.png", units="in", width=5, height=5, res=300)
 plot(sort(Matrix::rowSums(GetAssayData(experiment.aggregate) >= 3)) , xlab="gene rank", ylab="number of cells", main="Cells per genes (reads/gene >= 3 )")
 dev.off()
 
-png("plots/exploratory_violinplots.png", units="in", width=8, height=8, res=300)
+png("plots/exploratory_violinplots.png", units="in", width=5, height=5, res=300)
 VlnPlot(
   experiment.aggregate,
   features = c("nFeature_RNA", "nCount_RNA","percent.mito"),
   ncol = 1, pt.size = 0.3)
 dev.off()
 
-png("plots/exploratory_cellcycle_scatter.png", units="in", width=8, height=8, res=300)
+png("plots/exploratory_cellcycle_scatter.png", units="in", width=5, height=5, res=300)
 FeatureScatter(experiment.aggregate, feature1 = "nCount_RNA", feature2 = "percent.mito")
 dev.off()
 
-png("plots/exploratory_RNA_scatter.png", units="in", width=8, height=8, res=300)
+png("plots/exploratory_RNA_scatter.png", units="in", width=5, height=5, res=300)
 FeatureScatter(
   experiment.aggregate, "nCount_RNA", "nFeature_RNA",
   pt.size = 0.5)
