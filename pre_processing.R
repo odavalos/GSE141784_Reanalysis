@@ -145,7 +145,7 @@ png("plots/gene_representation.png", units="in", width=5, height=5, res=300)
 plot(sort(Matrix::rowSums(GetAssayData(experiment.aggregate) >= 3)) , xlab="gene rank", ylab="number of cells", main="Cells per genes (reads/gene >= 3 )")
 dev.off()
 
-png("plots/exploratory_violinplots.png", units="in", width=5, height=5, res=300)
+png("plots/exploratory_violinplots.png", units="in", width=8, height=8, res=300)
 VlnPlot(
   experiment.aggregate,
   features = c("nFeature_RNA", "nCount_RNA","percent.mito"),
