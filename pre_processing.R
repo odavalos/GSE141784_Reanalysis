@@ -54,10 +54,7 @@ library(knitr)
 library(kableExtra)
 library(ggplot2)
 
-
 # Loading the CellRanger Matrix Data and creating the base Seurat object.
-
-
 
 dataset_loc <- "~/Documents/GSE141784/GSE141784_RAW/"
 ids <- c("NOD_4wk", "NOD_8wk", "NOD_15wk") # the data directory names just created above
