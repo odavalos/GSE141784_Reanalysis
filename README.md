@@ -10,32 +10,37 @@ The main goal of the reanalysis is for gaining more practice with single cell RN
 - Work with different packages.
 
 
-________
+_________
 
-#### Cell-Cycle table:
+### Cell-Cycle table:
 
 ![cellcycle table](plots/cell_cycle_table.pdf)
 
+_________
 
-#### Gene rank plot:
+### Gene rank plot:
 
 ![gene rank plot](plots/gene_representation.png)
 
+_________
 
-#### Exploratory violin plots: 
+### Exploratory violin plots: 
 
 ![violinplot](plots/exploratory_violinplots.png)
 
+_________
 
-#### Cell-Cycle scatter plot:
+### Cell-Cycle scatter plot:
 
 ![cellcycle scatter](plots/exploratory_cellcycle_scatter.png)
 
+_________
 
-#### RNA scatter plot:
+### RNA scatter plot:
 
 ![RNA scatter](plots/exploratory_RNA_scatter.png)
 
+_________
 
 
 
