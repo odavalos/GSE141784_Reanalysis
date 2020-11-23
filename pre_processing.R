@@ -170,17 +170,37 @@ experiment.aggregate <- subset(experiment.aggregate, nCount_RNA >= 500 & nCount_
 
 experiment.aggregate
 
+table(experiment.aggregate@active.ident)
+
 save(experiment.aggregate,file="GSE141784_sub_prenorm_seurat_object.RData")
 
 # Filtering/Normalization -------------------------------------------------
 
 load(file="GSE141784_sub_prenorm_seurat_object.RData")
 
+experiment.aggregate <- NormalizeData(
+  object = experiment.aggregate,
+  normalization.method = "LogNormalize",
+  scale.factor = 10000)
 
 
+# Variable Gene Identification --------------------------------------------
 
+experiment.aggregate <- FindVariableFeatures(
+  object = experiment.aggregate,
+  selection.method = "vst")
 
+length(VariableFeatures(experiment.aggregate))
 
+top20_vargenes <- head(VariableFeatures(experiment.aggregate), 20)
 
+top20_vargenes
 
+vargenep1 <- VariableFeaturePlot(experiment.aggregate)
+vargenep1 <- LabelPoints(plot = vargenep1, points = top20_vargenes, repel = TRUE)
 
+png("plots/top20_vargenes.png", units="in", width=8, height=5, res=300)
+vargenep1
+dev.off()
+
+save(experiment.aggregate, file="GSE141784_normalized_nonbatch_seurat.RData")
