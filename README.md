@@ -42,5 +42,8 @@ _________
 
 _________
 
+### Top 20 Variable Genes
 
+![Var Genes](plots/top20_vargenes.png)
 
+_________
