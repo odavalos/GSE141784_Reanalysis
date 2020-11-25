@@ -20,30 +20,30 @@ _________
 
 ### Gene rank plot:
 
-![gene rank plot](plots/gene_representation.png)
+<img src="plots/gene_representation.png" width="600" height="600">
 
 _________
 
 ### Exploratory violin plots: 
 
-![violinplot](plots/exploratory_violinplots.png)
+<img src="plots/exploratory_violinplots.png" width="600" height="600">
 
 _________
 
 ### Cell-Cycle scatter plot:
 
-![cellcycle scatter](plots/exploratory_cellcycle_scatter.png)
+<img src="plots/exploratory_cellcycle_scatter.png" width="600" height="600">
 
 _________
 
 ### RNA scatter plot:
 
-![RNA scatter](plots/exploratory_RNA_scatter.png)
+<img src="plots/exploratory_RNA_scatter.png" width="600" height="600">
 
 _________
 
 ### Top 20 Variable Genes
 
-![Var Genes](plots/top20_vargenes.png)
+<img src="plots/top20_vargenes.png" width="600" height="600">
 
 _________
