@@ -20,7 +20,7 @@ _________
 
 ### Gene rank plot:
 
-<img src="plots/gene_representation.png" width="600" height="600">
+<img src="plots/gene_representation.png" width="500" height="500">
 
 _________
 
@@ -44,6 +44,6 @@ _________
 
 ### Top 20 Variable Genes
 
-<img src="plots/top20_vargenes.png" width="600" height="600">
+<img src="plots/top20_vargenes.png" width="500" height="300">
 
 _________
