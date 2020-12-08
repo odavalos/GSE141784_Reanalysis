@@ -6,9 +6,9 @@ setwd("~/Documents/GSE141784/GSE141784_RAW/")
 list.dirs()
 list.files()
 
-dir.create("NOD_4wk")
-dir.create("NOD_8wk")
-dir.create("NOD_15wk")
+dir.create("NOD_4w")
+dir.create("NOD_8w")
+dir.create("NOD_15w")
 
 
 nod4w <- list.files(pattern = "NOD_4w", 
@@ -22,22 +22,22 @@ nod15w <- list.files(pattern = "NOD_15w",
                      recursive = TRUE)
 
 
-file.copy(nod4w[1:3], "NOD_4wk")
-file.copy(nod8w[1:3], "NOD_8wk")
-file.copy(nod15w, "NOD_15wk")
+file.copy(nod4w[1:3], "NOD_4w")
+file.copy(nod8w[1:3], "NOD_8w")
+file.copy(nod15w, "NOD_15w")
 
-setwd("~/Documents/GSE141784/GSE141784_RAW/NOD_4wk")
+setwd("~/Documents/GSE141784/GSE141784_RAW/NOD_4w")
 file.rename(list.files(), 
             gsub("GSM4213196_NOD_4w_2734_", "", list.files()))
 file.rename("genes.tsv.gz", gsub("genes.tsv.gz","features.tsv.gz", "genes.tsv.gz"))
 
-setwd("~/Documents/GSE141784/GSE141784_RAW/NOD_8wk")
+setwd("~/Documents/GSE141784/GSE141784_RAW/NOD_8w")
 file.rename(list.files(),
             gsub("GSM4213197_NOD_8w_2734_", "", list.files()))
 file.rename("genes.tsv.gz", gsub("genes.tsv.gz","features.tsv.gz", "genes.tsv.gz"))
 
 
-setwd("~/Documents/GSE141784/GSE141784_RAW/NOD_15wk")
+setwd("~/Documents/GSE141784/GSE141784_RAW/NOD_15w")
 file.rename(list.files(), 
             gsub("GSM4213198_NOD_15w_2734_", "", list.files()))
 file.rename("genes.tsv.gz", gsub("genes.tsv.gz","features.tsv.gz", "genes.tsv.gz"))
@@ -49,6 +49,8 @@ setwd("~/Documents/RStudio/GSE141784_reanalysis")
 # Seurat Setup ------------------------------------------------------------
 
 # Loading in the packages
+library(dplyr)
+library(SeuratDisk)
 library(Seurat)
 library(knitr)
 library(kableExtra)
@@ -57,25 +59,101 @@ library(ggplot2)
 # Loading the CellRanger Matrix Data and creating the base Seurat object.
 
 dataset_loc <- "~/Documents/GSE141784/GSE141784_RAW/"
-ids <- c("NOD_4wk", "NOD_8wk", "NOD_15wk") # the data directory names just created above
+ids <- c("NOD_4w", "NOD_8w", "NOD_15w") # the data directory names just created above
 
 d10x.data <- sapply(ids, function(i){
-  d10x <- Read10X(file.path(dataset_loc,i))
-  colnames(d10x) <- paste(sapply(strsplit(colnames(d10x),split="-"),'[[',1L),i,sep="-")
+  d10x <- Read10X(file.path(dataset_loc,i), strip.suffix = FALSE)
+  colnames(d10x) <- paste(i,sapply(colnames(d10x),'[[',1L),sep="-")
   d10x
 })
 
 experiment.data <- do.call("cbind", d10x.data)
 
+# Filtering the annotation data for our needs (4wk, 8wk, 15wk)
+
+meta_GSE141784_loc <- "~/Documents/GSE141784/GSE141784_Annotation_meta_data.txt"
+meta_GSE141784 <- read.delim(meta_GSE141784_loc, 
+                             sep = "\t", 
+                             header = TRUE)
+
+meta_GSE141784 %>%
+  filter(Sample == "NOD_8w") %>%
+  select(Library) %>%
+  table()
+
+### need to remove the "-1" off of the barcodes indicating library. 
+### need to either create new barcodes with biological condition attached to the end like XXXXXXXXX-NOD_4wk
+
+meta_GSE141784_sub <- meta_GSE141784 %>%
+  filter(Sample == "NOD_4w" | Sample == "NOD_8w" | Sample == "NOD_15w")
+
+# Looking to figure out which batch is the replicated samples used for reproducibility verification to exclude from analysis ("NOD 4w" and "NOD_8w" samples used)
+
+meta_GSE141784_sub %>% 
+  select(Batch) %>% 
+  table()
+
+meta_GSE141784_sub %>% 
+  filter(Sample == "NOD_4w" | Sample == "NOD_8w") %>% 
+  select(Batch) %>% 
+  table()
+
+meta_GSE141784_sub %>% 
+  filter(Sample == "NOD_15w") %>% 
+  select(Batch) %>% 
+  table()
+
+# Here we are generating a new metadata subset that excludes the batch "2849" (This is the replicate samples batch)
+meta_GSE141784_sub <- meta_GSE141784 %>%
+  filter(Sample == "NOD_4w" |
+           Sample == "NOD_8w" |
+           Sample == "NOD_15w" &
+           Batch != "2849")
+
+sample <- c()
+for(i in c(unique(meta_GSE141784_sub$Library))){
+  sample <- c(sample, meta_GSE141784_sub %>%
+                filter(Library == i) %>%
+                select(Sample) %>%
+                unique() %>% 
+                pull(1))
+}
+library <- unique(meta_GSE141784_sub$Library)
+sample_libraries <- data.frame(library = library, experiment = sample)
+sample_libraries
+
+meta_GSE141784_sub <- meta_GSE141784_sub %>%
+  mutate(
+    Barcode_2 = case_when(
+      Sample == "NOD_4w" ~ paste("NOD_4w", Barcode, sep = "-"),
+      Sample == "NOD_8w" ~ paste("NOD_8w", Barcode, sep = "-"),
+      Sample == "NOD_15w" ~ paste("NOD_15w", Barcode, sep = "-")
+    )
+  ) %>%
+  select(-Barcode) %>%
+  rename(Barcode = Barcode_2) %>%
+  relocate(Barcode)
+  
+# reordering columns to match metadata order (could cause an issue?)
+# barcode_idx <- match(meta_GSE141784_sub$Barcode, experiment.data@Dimnames[[2]])
+# experiment.data@Dimnames[[2]] <- experiment.data@Dimnames[[2]][barcode_idx]
+# Yes caused an issue ...
+
 experiment.aggregate <- CreateSeuratObject(
   experiment.data,
-  project = "scRNA test",
+  project = "GSE141784_analysis",
   min.cells = 10,
   min.features = 200,
   names.field = 2,
-  names.delim = "\\-")
+  names.delim = "\\-",
+  meta.data = meta_GSE141784_sub)
 
-# saveRDS(experiment.aggregate,"GSE141784_experiment_aggregate.rds") # dataset is ~ 1GB
+# Saving the original merged dataset as rds and loom objects
+saveRDS(experiment.aggregate,"data/GSE141784_experiment_aggregate.rds") # dataset is ~ 1GB
+SaveH5Seurat(experiment.aggregate, overwrite = FALSE)
+GSE141784.loom <- as.loom(experiment.aggregate, filename = "/data/GSE141784.loom", verbose = FALSE)
+GSE141784.loom
+
 
 experiment.aggregate <- readRDS("GSE141784_experiment_aggregate.rds")
 
