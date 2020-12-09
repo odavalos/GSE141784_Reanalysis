@@ -61,16 +61,28 @@ library(ggplot2)
 dataset_loc <- "~/Documents/GSE141784/GSE141784_RAW/"
 ids <- c("NOD_4w", "NOD_8w", "NOD_15w") # the data directory names just created above
 
+# d10x.data <- sapply(ids, function(i){
+#   d10x <- Read10X(file.path(dataset_loc,i), strip.suffix = FALSE)
+#   colnames(d10x) <- paste(i,sapply(colnames(d10x),'[[',1L),sep="-")
+#   d10x
+# })
 d10x.data <- sapply(ids, function(i){
-  d10x <- Read10X(file.path(dataset_loc,i), strip.suffix = FALSE)
-  colnames(d10x) <- paste(i,sapply(colnames(d10x),'[[',1L),sep="-")
+  d10x <- Read10X(file.path(dataset_loc,i))
+  colnames(d10x) <- paste(sapply(strsplit(colnames(d10x),split="-"),'[[',1L),i,sep="-")
   d10x
 })
 
 experiment.data <- do.call("cbind", d10x.data)
 
-# Filtering the annotation data for our needs (4wk, 8wk, 15wk)
+experiment.aggregate <- CreateSeuratObject(
+  experiment.data,
+  project = "GSE141784_analysis",
+  min.cells = 10,
+  min.features = 200,
+  names.field = 2,
+  names.delim = "\\-")
 
+# Filtering the annotation data for our needs (4wk, 8wk, 15wk)
 meta_GSE141784_loc <- "~/Documents/GSE141784/GSE141784_Annotation_meta_data.txt"
 meta_GSE141784 <- read.delim(meta_GSE141784_loc, 
                              sep = "\t", 
@@ -105,10 +117,12 @@ meta_GSE141784_sub %>%
 
 # Here we are generating a new metadata subset that excludes the batch "2849" (This is the replicate samples batch)
 meta_GSE141784_sub <- meta_GSE141784 %>%
-  filter(Sample == "NOD_4w" |
-           Sample == "NOD_8w" |
-           Sample == "NOD_15w" &
-           Batch != "2849")
+  filter(Sample == "NOD_4w" | Sample == "NOD_8w" | Sample == "NOD_15w",
+           Batch == 2734)
+
+meta_GSE141784 %>%
+  filter(Sample == "NOD_4w" | Sample == "NOD_8w" | Sample == "NOD_15w")
+
 
 sample <- c()
 for(i in c(unique(meta_GSE141784_sub$Library))){
@@ -122,38 +136,32 @@ library <- unique(meta_GSE141784_sub$Library)
 sample_libraries <- data.frame(library = library, experiment = sample)
 sample_libraries
 
-meta_GSE141784_sub <- meta_GSE141784_sub %>%
+meta_GSE141784_sub <- meta_GSE141784 %>%
   mutate(
     Barcode_2 = case_when(
-      Sample == "NOD_4w" ~ paste("NOD_4w", Barcode, sep = "-"),
-      Sample == "NOD_8w" ~ paste("NOD_8w", Barcode, sep = "-"),
-      Sample == "NOD_15w" ~ paste("NOD_15w", Barcode, sep = "-")
+      Sample == "NOD_4w" ~ paste(Barcode, "NOD_4w", sep = "-"),
+      Sample == "NOD_8w" ~ paste(Barcode, "NOD_8w", sep = "-"),
+      Sample == "NOD_15w" ~ paste(Barcode, "NOD_15w", sep = "-")
     )
   ) %>%
   select(-Barcode) %>%
   rename(Barcode = Barcode_2) %>%
   relocate(Barcode)
-  
-# reordering columns to match metadata order (could cause an issue?)
-# barcode_idx <- match(meta_GSE141784_sub$Barcode, experiment.data@Dimnames[[2]])
-# experiment.data@Dimnames[[2]] <- experiment.data@Dimnames[[2]][barcode_idx]
-# Yes caused an issue ...
 
-experiment.aggregate <- CreateSeuratObject(
-  experiment.data,
-  project = "GSE141784_analysis",
-  min.cells = 10,
-  min.features = 200,
-  names.field = 2,
-  names.delim = "\\-",
-  meta.data = meta_GSE141784_sub)
+meta_GSE141784_sub$Barcode <- meta_GSE141784_sub$Barcode %>%
+  stringr::str_replace(pattern = "\\-\\d", replacement = "")
+
+metadata_subset_2 <- meta_GSE141784_sub[match(colnames(x = experiment.aggregate[]), meta_GSE141784_sub[,1]),] %>% na.omit()
+rownames(metadata_subset_2) <- metadata_subset_2$Barcode
+experiment.aggregate <- AddMetaData(experiment.aggregate, metadata_subset_2)
+
 
 # Saving the original merged dataset as rds and loom objects
-saveRDS(experiment.aggregate,"data/GSE141784_experiment_aggregate.rds") # dataset is ~ 1GB
-SaveH5Seurat(experiment.aggregate, overwrite = FALSE)
-GSE141784.loom <- as.loom(experiment.aggregate, filename = "/data/GSE141784.loom", verbose = FALSE)
-GSE141784.loom
-
+# saveRDS(experiment.aggregate,"data/GSE141784_experiment_aggregate.rds")
+# SaveH5Seurat(experiment.aggregate, overwrite = FALSE)
+# Convert("GSE141784_analysis.h5Seurat", dest = "h5ad")
+# file.copy("GSE141784_analysis.h5Seurat", "data")
+# file.copy("GSE141784_analysis.h5ad", "data")
 
 experiment.aggregate <- readRDS("GSE141784_experiment_aggregate.rds")
 
@@ -188,11 +196,18 @@ tmp <- data.frame(cell.cycle = cycles$phases)
 rownames(tmp) <- colnames(mat)
 experiment.aggregate <- AddMetaData(experiment.aggregate, tmp)
 
-save(experiment.aggregate,file="GSE141784_original_seurat_object.RData")
+# save(experiment.aggregate,file="GSE141784_annotated_seurat_object.RData")
+# SaveH5Seurat(experiment.aggregate,
+#              filename = paste0(Project(object = experiment.aggregate),
+#                                "_annotated", ".h5Seurat"),
+#              overwrite = FALSE)
+# Convert("GSE141784_analysis_annotated.h5Seurat", dest = "h5ad")
+# file.copy("GSE141784_analysis_annotated.h5Seurat", "data")
+# file.copy("GSE141784_analysis_annotated.h5ad", "data")
 
 # Plotting ----------------------------------------------------------------
 
-load(file="GSE141784_original_seurat_object.RData")
+load(file="GSE141784_annotated_seurat_object.RData")
 
 # Generating a subdirectory for plots
 ifelse(!dir.exists((paste0(getwd(),"/plots"))), 
@@ -282,3 +297,12 @@ vargenep1
 dev.off()
 
 save(experiment.aggregate, file="GSE141784_normalized_nonbatch_seurat.RData")
+
+
+
+
+
+
+
+
+
