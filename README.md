@@ -26,19 +26,19 @@ _________
 
 ### Exploratory violin plots: 
 
-<img src="plots/exploratory_violinplots.png" width="600" height="600">
+<img src="plots/exploratory_violinplots.png" width="500" height="500">
 
 _________
 
 ### Cell-Cycle scatter plot:
 
-<img src="plots/exploratory_cellcycle_scatter.png" width="600" height="600">
+<img src="plots/exploratory_cellcycle_scatter.png" width="400" height="400">
 
 _________
 
 ### RNA scatter plot:
 
-<img src="plots/exploratory_RNA_scatter.png" width="600" height="600">
+<img src="plots/exploratory_RNA_scatter.png" width="400" height="400">
 
 _________
 
