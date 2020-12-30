@@ -12,38 +12,19 @@ The main goal of the reanalysis is for gaining more practice with single cell RN
 
 _________
 
-### Cell-Cycle table:
+### CD8 Subset Labeled Clusters
 
-![cellcycle table](plots/cell_cycle_table.pdf)
-
-_________
-
-### Gene rank plot:
-
-<img src="plots/gene_representation.png" width="500" height="500">
+<img src="plots/cd8subset_integrated_marker_ids_tsne_umap_dark.png" width="600" height="300">
 
 _________
 
-### Exploratory violin plots: 
+### CD8 Subset [Slingshot](https://www.bioconductor.org/packages/release/bioc/html/slingshot.html) Trajectory (Cluster 4 Start)
 
-<img src="plots/exploratory_violinplots.png" width="600" height="600">
-
-_________
-
-### Cell-Cycle scatter plot:
-
-<img src="plots/exploratory_cellcycle_scatter.png" width="600" height="600">
+<img src="plots/cd8subset_slingshot_start4.png" width="600" height="300">
 
 _________
 
-### RNA scatter plot:
 
-<img src="plots/exploratory_RNA_scatter.png" width="600" height="600">
 
-_________
 
-### Top 20 Variable Genes
 
-<img src="plots/top20_vargenes.png" width="500" height="300">
-
-_________
