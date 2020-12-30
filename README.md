@@ -47,3 +47,26 @@ _________
 <img src="plots/top20_vargenes.png" width="500" height="300">
 
 _________
+
+### CD8 Subset Found Clusters
+
+<img src="plots/cd8subset_integrated_foundclusters_tsne_umap.png" width="600" height="300">
+
+_________
+
+### CD8 Subset Labeled Clusters
+
+<img src="plots/cd8subset_integrated_marker_ids_tsne_umap_dark.png" width="600" height="300">
+
+_________
+
+### CD8 Subset [Slingshot](https://www.bioconductor.org/packages/release/bioc/html/slingshot.html) Trajectory (Cluster 4 Start)
+
+<img src="plots/cd8subset_slingshot_start4.png" width="600" height="300">
+
+_________
+
+
+
+
+
