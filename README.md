@@ -14,7 +14,7 @@ _________
 
 ### CD8 Subset Labeled Clusters
 
-<img src="plots/cd8subset_integrated_marker_ids_tsne_umap_dark.png" width="600" height="300">
+<img src="plots/ann_tsne.png" width="400" height="350">
 
 _________
 
