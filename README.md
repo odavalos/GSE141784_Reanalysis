@@ -14,7 +14,7 @@ _________
 
 ### CD8 Subset Labeled Clusters
 
-<img src="plots/ann_tsne.png" width="400" height="350">
+<img src="plots/ann_tsne.png" width="400" height="300">
 
 _________
 
