@@ -12,48 +12,6 @@ The main goal of the reanalysis is for gaining more practice with single cell RN
 
 _________
 
-### Cell-Cycle table:
-
-![cellcycle table](plots/cell_cycle_table.pdf)
-
-_________
-
-### Gene rank plot:
-
-<img src="plots/gene_representation.png" width="500" height="500">
-
-_________
-
-### Exploratory violin plots: 
-
-<img src="plots/exploratory_violinplots.png" width="500" height="500">
-
-_________
-
-### Cell-Cycle scatter plot:
-
-<img src="plots/exploratory_cellcycle_scatter.png" width="400" height="400">
-
-_________
-
-### RNA scatter plot:
-
-<img src="plots/exploratory_RNA_scatter.png" width="400" height="400">
-
-_________
-
-### Top 20 Variable Genes
-
-<img src="plots/top20_vargenes.png" width="500" height="300">
-
-_________
-
-### CD8 Subset Found Clusters
-
-<img src="plots/cd8subset_integrated_foundclusters_tsne_umap.png" width="600" height="300">
-
-_________
-
 ### CD8 Subset Labeled Clusters
 
 <img src="plots/cd8subset_integrated_marker_ids_tsne_umap_dark.png" width="600" height="300">
